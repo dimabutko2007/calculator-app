@@ -4,6 +4,7 @@ const numberButtons = document.querySelectorAll("[data-number]");
 const decimalButton = document.querySelector('[data-action="decimal"]');
 const clearButton = document.querySelector('[data-action="clear"]');
 const backspaceButton = document.querySelector('[data-action="backspace"]');
+const signButton = document.querySelector('[data-action="sign"]');
 
 let currentValue = "0";
 
@@ -21,7 +22,6 @@ numberButtons.forEach(button => {
     });
 });
 
-
 // "."
 decimalButton.addEventListener("click", () => {
     if (!currentValue.includes(".")) {
@@ -29,7 +29,6 @@ decimalButton.addEventListener("click", () => {
         display.textContent = currentValue;
     }
 });
-
 
 // "C"
 clearButton.addEventListener("click", () => {
@@ -43,6 +42,18 @@ backspaceButton.addEventListener("click", () => {
         currentValue = currentValue.slice(0, -1);
     } else {
         currentValue = "0";
+    }
+
+    display.textContent = currentValue;
+});
+
+signButton.addEventListener("click", () => {
+    if (currentValue === "0") return;
+
+    if (currentValue.startsWith("-")) {
+        currentValue = currentValue.slice(1);
+    } else {
+        currentValue = "-" + currentValue;
     }
 
     display.textContent = currentValue;

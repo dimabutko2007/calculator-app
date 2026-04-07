@@ -11,42 +11,50 @@
 <body>
     <h1>Calculator</h1>
 
-    <div class="calculator">
+    <div class="main-container">
 
-        <!-- Display -->
-        <div class="calculator__display" id="display">
-            0
+        <div class="calculator">
+
+            <!-- Display -->
+            <div class="calculator__display" id="display">
+                0
+            </div>
+
+            <!-- Buttons -->
+            <div class="calculator__buttons">
+                <button class="btn btn--function" data-action="clear">C</button>
+                <button class="btn btn--function" data-action="factorial">x!</button>
+                <button class="btn btn--function" data-action="power">x²</button>
+                <button class="btn btn--function" data-action="sqrt">√</button>
+                <button class="btn btn--function btn--backspace" data-action="backspace">←</button>
+
+                <button class="btn btn--number" data-number="7">7</button>
+                <button class="btn btn--number" data-number="8">8</button>
+                <button class="btn btn--number" data-number="9">9</button>
+                <button class="btn btn--function" data-action="percent">%</button>
+                <button class="btn btn--operator" data-action="divide">÷</button>
+
+                <button class="btn btn--number" data-number="4">4</button>
+                <button class="btn btn--number" data-number="5">5</button>
+                <button class="btn btn--number" data-number="6">6</button>
+                <button class="btn btn--function" data-action="sign">+/-</button>
+                <button class="btn btn--operator" data-action="multiply">*</button>
+
+                <button class="btn btn--number" data-number="1">1</button>
+                <button class="btn btn--number" data-number="2">2</button>
+                <button class="btn btn--number" data-number="3">3</button>
+                <button class="btn btn--operator" data-action="subtract">-</button>
+                <button class="btn btn--operator" data-action="add">+</button>
+
+                <button class="btn btn--number btn--zero" data-number="0">0</button>
+                <button class="btn btn--number" data-action="decimal">.</button>
+                <button class="btn btn--equals" data-action="equals">=</button>
+            </div>
+            
         </div>
 
-        <!-- Buttons -->
-         <div class="calculator__buttons">
-            <button class="btn btn--function" data-action="clear">C</button>
-            <button class="btn btn--function" data-action="factorial">x!</button>
-            <button class="btn btn--function" data-action="power">x²</button>
-            <button class="btn btn--function" data-action="sqrt">√</button>
-            <button class="btn btn--function btn--backspace" data-action="backspace">←</button>
-
-            <button class="btn btn--number" data-number="7">7</button>
-            <button class="btn btn--number" data-number="8">8</button>
-            <button class="btn btn--number" data-number="9">9</button>
-            <button class="btn btn--function" data-action="percent">%</button>
-            <button class="btn btn--operator" data-action="divide">÷</button>
-
-            <button class="btn btn--number" data-number="4">4</button>
-            <button class="btn btn--number" data-number="5">5</button>
-            <button class="btn btn--number" data-number="6">6</button>
-            <button class="btn btn--function" data-action="sign">+/-</button>
-            <button class="btn btn--operator" data-action="multiply">*</button>
-
-            <button class="btn btn--number" data-number="1">1</button>
-            <button class="btn btn--number" data-number="2">2</button>
-            <button class="btn btn--number" data-number="3">3</button>
-            <button class="btn btn--operator" data-action="subtract">-</button>
-            <button class="btn btn--operator" data-action="add">+</button>
-
-            <button class="btn btn--number btn--zero" data-number="0">0</button>
-            <button class="btn btn--number" data-action="decimal">.</button>
-            <button class="btn btn--equals" data-action="equals">=</button>
+        <div class="theme-toggle-container">
+            <button id="theme-toggle" class="theme-toggle-btn">Dark Mode</button>
         </div>
 
     </div>

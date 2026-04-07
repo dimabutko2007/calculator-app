@@ -1,3 +1,6 @@
+const themeToggle = document.getElementById('theme-toggle');
+const body = document.body;
+
 const display = document.getElementById("display");
 
 const numberButtons = document.querySelectorAll("[data-number]");
@@ -7,6 +10,19 @@ const backspaceButton = document.querySelector('[data-action="backspace"]');
 const signButton = document.querySelector('[data-action="sign"]');
 
 let currentValue = "0";
+
+// "theme"
+themeToggle.addEventListener('click', () => {
+    const isDark = body.getAttribute('data-theme') === 'dark';
+
+    if (isDark) {
+        body.removeAttribute('data-theme');
+        themeToggle.textContent = 'Dark Mode';
+    } else {
+        body.setAttribute('data-theme', 'dark');
+        themeToggle.textContent = 'Light Mode';
+    }
+});
 
 // "0-9"
 numberButtons.forEach(button => {
@@ -47,6 +63,7 @@ backspaceButton.addEventListener("click", () => {
     display.textContent = currentValue;
 });
 
+// "+/-"
 signButton.addEventListener("click", () => {
     if (currentValue === "0") return;
 

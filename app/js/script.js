@@ -41,7 +41,10 @@ numberButtons.forEach(button => {
         const number = button.dataset.number;
         const lastChar = currentValue.slice(-1);
 
-        if (currentValue.length >= 13 && !isFinished) {
+        const parts = currentValue.split(/[\+\-\*÷\^√]/);
+        const lastNumber = parts[parts.length - 1];
+
+        if (lastNumber.length >= 14 && !isFinished) {
             return; 
         }
 

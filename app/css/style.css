@@ -96,6 +96,19 @@ h1 {
     text-align: right;
     margin-bottom: 20px;
     min-height: 40px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+#expression, #result {
+    width: 100%;
+    word-break: break-all;
 }
 
 .calculator__buttons {

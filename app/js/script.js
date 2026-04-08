@@ -12,9 +12,15 @@ const backspaceButton = document.querySelector('[data-action="backspace"]');
 const signButton = document.querySelector('[data-action="sign"]');
 const operatorButtons = document.querySelectorAll(".btn--operator");
 const equalsButton = document.querySelector('[data-action="equals"]');
+const factorialButton = document.querySelector('[data-action="factorial"]');
+const percentButton = document.querySelector('[data-action="percent"]');
+const sqrtButton = document.querySelector('[data-action="sqrt"]');
+const powerButton = document.querySelector('[data-action="power"]');
 
 let currentValue = "0";
 let isFinished = false;
+
+const OPERATORS = ["+", "-", "*", "÷"];
 
 // "theme"
 themeToggle.addEventListener('click', () => {
@@ -71,6 +77,13 @@ clearButton.addEventListener("click", () => {
 
 // "←"
 backspaceButton.addEventListener("click", () => {
+    if (isFinished) {
+        currentValue = "0";
+        isFinished = false;
+        resultDisplay.textContent = currentValue;
+        return;
+    }
+
     if (currentValue.length > 1) {
         currentValue = currentValue.slice(0, -1);
     } else {
@@ -80,7 +93,6 @@ backspaceButton.addEventListener("click", () => {
     resultDisplay.textContent = currentValue;
 });
 
-
 // "+", "-", "*", "÷"
 operatorButtons.forEach(button => {
     button.addEventListener("click", () => {
@@ -88,9 +100,8 @@ operatorButtons.forEach(button => {
 
         const symbol = button.textContent;
         const lastChar = currentValue.slice(-1);
-        const operators = ["+", "-", "*", "÷"];
 
-        if (operators.includes(lastChar)) {
+        if (OPERATORS.includes(lastChar)) {
             currentValue = currentValue.slice(0, -1) + symbol;
         } else {
             currentValue += symbol;
@@ -102,21 +113,20 @@ operatorButtons.forEach(button => {
 
 // "="
 equalsButton.addEventListener("click", () => {
-    const operators = ["+", "-", "*", "÷"]; // перевірка, чи є в поточному виразі оператор
-    const hasOperator = operators.some(op => currentValue.includes(op));
+    const hasOperator = OPERATORS.some(op => currentValue.includes(op));
     if (!hasOperator) return;
 
-    const lastChar = currentValue.slice(-1); // перевірка, чи останній символ є оператором
-    if (operators.includes(lastChar)) return;
+    const lastChar = currentValue.slice(-1);
+    if (OPERATORS.includes(lastChar)) return;
 
     try {
         expressionDisplay.textContent = currentValue;
-        let mathString = currentValue.replace(/÷/g, "/").replace(/--/g, "- -");
 
-        let result = eval(mathString);
+        let tokens = tokenize(currentValue);
+        let result = calculate(tokens);
 
-        if (!isFinite(result)) { // для перевірки на ділення на нуль та інші нечислові результати
-            resultDisplay.textContent = "Error: Division by zero";
+        if (!isFinite(result)) {
+            resultDisplay.textContent = "Error";
             currentValue = "0";
             expressionDisplay.textContent = "";
             return;
@@ -128,15 +138,81 @@ equalsButton.addEventListener("click", () => {
         } else {
             formattedResult = result.toFixed(5).replace(/\.?0+$/, '');
         }
-        resultDisplay.textContent = formattedResult;
 
+        resultDisplay.textContent = formattedResult;
         currentValue = formattedResult;
         isFinished = true;
+
     } catch (error) {
         resultDisplay.textContent = "Error";
         currentValue = "0";
     }
 });
+
+function tokenize(expression) {
+    let tokens = [];
+    let number = "";
+
+    for (let i = 0; i < expression.length; i++) {
+        let char = expression[i];
+
+        if ("0123456789.".includes(char)) {
+            number += char;
+        } else if (char === "-" && (i === 0 || "+-*÷".includes(expression[i - 1]))) {
+            number += char;
+        } else {
+            if (number !== "") {
+                tokens.push(parseFloat(number));
+                number = "";
+            }
+            tokens.push(char);
+        }
+    }
+
+    if (number !== "") {
+        tokens.push(parseFloat(number));
+    }
+
+    return tokens;
+}
+
+function calculate(tokens) {
+    for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i] === "*" || tokens[i] === "÷") {
+            let left = tokens[i - 1];
+            let right = tokens[i + 1];
+            let result;
+
+            if (tokens[i] === "*") {
+                result = left * right;
+            } else {
+                result = left / right;
+            }
+
+            tokens.splice(i - 1, 3, result);
+            i -= 1;
+        }
+    }
+
+    for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i] === "+" || tokens[i] === "-") {
+            let left = tokens[i - 1];
+            let right = tokens[i + 1];
+            let result;
+
+            if (tokens[i] === "+") {
+                result = left + right;
+            } else {
+                result = left - right;
+            }
+
+            tokens.splice(i - 1, 3, result);
+            i -= 1;
+        }
+    }
+
+    return tokens[0];
+}
 
 // "+/-"
 signButton.addEventListener("click", () => {
@@ -147,11 +223,10 @@ signButton.addEventListener("click", () => {
         return;
     }
 
-    const operators = ["+", "*", "÷", "-"];
     let lastOpIndex = -1;
 
     for (let i = currentValue.length - 1; i >= 0; i--) {
-        if (operators.includes(currentValue[i])) {
+        if (OPERATORS.includes(currentValue[i])) {
             if (currentValue[i] === "-") {
                 if (i > 0 && /\d/.test(currentValue[i - 1])) {
                     lastOpIndex = i;

@@ -39,6 +39,12 @@ themeToggle.addEventListener('click', () => {
 numberButtons.forEach(button => {
     button.addEventListener("click", () => {
         const number = button.dataset.number;
+        const lastChar = currentValue.slice(-1);
+
+        if (lastChar === "!" || lastChar === "%") {
+            return;
+        }
+
         if (isFinished) {
             currentValue = number;
             expressionDisplay.textContent = "";
@@ -52,7 +58,6 @@ numberButtons.forEach(button => {
         resultDisplay.textContent = currentValue;
     });
 });
-
 
 // "."
 decimalButton.addEventListener("click", () => {
@@ -101,7 +106,8 @@ operatorButtons.forEach(button => {
         const symbol = button.textContent;
         const lastChar = currentValue.slice(-1);
 
-        if (OPERATORS.includes(lastChar)) {
+        if (lastChar === "√") return;  
+        else if (OPERATORS.includes(lastChar)) {
             currentValue = currentValue.slice(0, -1) + symbol;
         } else {
             currentValue += symbol;
@@ -113,11 +119,11 @@ operatorButtons.forEach(button => {
 
 // "="
 equalsButton.addEventListener("click", () => {
-    const hasOperator = OPERATORS.some(op => currentValue.includes(op));
+    const hasOperator = [...OPERATORS, "^", "√", "!", "%"].some(op => currentValue.includes(op));
     if (!hasOperator) return;
 
     const lastChar = currentValue.slice(-1);
-    if (OPERATORS.includes(lastChar)) return;
+    if ([...OPERATORS, "^", "√"].includes(lastChar)) return;
 
     try {
         expressionDisplay.textContent = currentValue;
@@ -158,13 +164,16 @@ function tokenize(expression) {
 
         if ("0123456789.".includes(char)) {
             number += char;
-        } else if (char === "-" && (i === 0 || "+-*÷".includes(expression[i - 1]))) {
+        } 
+        else if (char === "-" && (i === 0 || "+-*÷^√".includes(expression[i - 1]))) {
             number += char;
-        } else {
+        } 
+        else {
             if (number !== "") {
                 tokens.push(parseFloat(number));
                 number = "";
             }
+
             tokens.push(char);
         }
     }
@@ -177,6 +186,55 @@ function tokenize(expression) {
 }
 
 function calculate(tokens) {
+    for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i] === "!") {
+            let num = tokens[i - 1];
+
+            if (num < 0 || !Number.isInteger(num)) return NaN;
+
+            let result = 1;
+            for (let j = 2; j <= num; j++) {
+                result *= j;
+            }
+
+            tokens.splice(i - 1, 2, result);
+            i -= 1;
+        }
+    }
+
+    for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i] === "√") {
+            let num = tokens[i + 1];
+            if (num === undefined || isNaN(num) || num < 0) return NaN;
+            let result = Math.sqrt(num);
+
+            tokens.splice(i, 2, result);
+            i -= 1;
+        }
+    }
+
+    for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i] === "%") {
+            let num = tokens[i - 1];
+            let result = num / 100;
+
+            tokens.splice(i - 1, 2, result);
+            i -= 1;
+        }
+    }
+
+    for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i] === "^") {
+            let left = tokens[i - 1];
+            let right = tokens[i + 1];
+
+            let result = Math.pow(left, right);
+
+            tokens.splice(i - 1, 3, result);
+            i -= 1;
+        }
+    }
+
     for (let i = 0; i < tokens.length; i++) {
         if (tokens[i] === "*" || tokens[i] === "÷") {
             let left = tokens[i - 1];
@@ -217,6 +275,7 @@ function calculate(tokens) {
 // "+/-"
 signButton.addEventListener("click", () => {
     if (currentValue === "0") return;
+    if (lastChar === "√") return;    
     if (isFinished) {
         currentValue = currentValue.startsWith("-") ? currentValue.slice(1) : "-" + currentValue;
         resultDisplay.textContent = currentValue;
@@ -252,6 +311,74 @@ signButton.addEventListener("click", () => {
         }
         
         currentValue = prefix + lastNumber;
+    }
+
+    resultDisplay.textContent = currentValue;
+});
+
+// "√"
+sqrtButton.addEventListener("click", () => {
+    const lastChar = currentValue.slice(-1);
+
+    if (lastChar === "√" || lastChar === ".") return;
+
+    if (currentValue === "0" || isFinished) {
+        currentValue = "√";
+        isFinished = false;
+    } else {
+        if (OPERATORS.includes(lastChar) || lastChar === "^") {
+            currentValue += "√";
+        } 
+        else {
+            currentValue += "*√";
+        }
+    }
+
+    resultDisplay.textContent = currentValue;
+});
+
+// "x!"
+factorialButton.addEventListener("click", () => {
+    if (isFinished) isFinished = false;
+
+    const lastChar = currentValue.slice(-1);
+
+    if (lastChar === "!" || OPERATORS.includes(lastChar)) return;
+
+    currentValue += "!";
+    resultDisplay.textContent = currentValue;
+});
+
+// "%"
+percentButton.addEventListener("click", () => {
+    if (isFinished) isFinished = false;
+
+    const lastChar = currentValue.slice(-1);
+
+    if (
+        currentValue === "0" ||
+        OPERATORS.includes(lastChar) ||
+        lastChar === "%" ||
+        lastChar === "√" ||
+        lastChar === "^"
+    ) return;
+
+    currentValue += "%";
+    resultDisplay.textContent = currentValue;
+});
+
+// "x^n"
+powerButton.addEventListener("click", () => {
+    if (isFinished) isFinished = false;
+
+    const lastChar = currentValue.slice(-1);
+
+    if (currentValue === "0") return;
+
+    if (OPERATORS.includes(lastChar) || lastChar === "^") {
+        currentValue = currentValue.slice(0, -1) + "^";
+    } else {
+        currentValue += "^";
     }
 
     resultDisplay.textContent = currentValue;

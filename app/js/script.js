@@ -41,6 +41,10 @@ numberButtons.forEach(button => {
         const number = button.dataset.number;
         const lastChar = currentValue.slice(-1);
 
+        if (currentValue.length >= 13 && !isFinished) {
+            return; 
+        }
+
         if (lastChar === "!" || lastChar === "%") {
             return;
         }
@@ -139,12 +143,13 @@ equalsButton.addEventListener("click", () => {
         }
 
         let formattedResult;
-        if (result % 1 === 0) {
+        if (result.toString().length > 12) {
+            formattedResult = result.toExponential(5);
+        } else if (result % 1 === 0) {
             formattedResult = result.toString();
         } else {
             formattedResult = result.toFixed(5).replace(/\.?0+$/, '');
         }
-
         resultDisplay.textContent = formattedResult;
         currentValue = formattedResult;
         isFinished = true;
@@ -191,6 +196,10 @@ function calculate(tokens) {
             let num = tokens[i - 1];
 
             if (num < 0 || !Number.isInteger(num)) return NaN;
+
+            if (num > 170) {
+                return Infinity;
+            }
 
             let result = 1;
             for (let j = 2; j <= num; j++) {

@@ -146,7 +146,7 @@ equalsButton.addEventListener("click", () => {
         }
 
         let formattedResult;
-        if (result.toString().length > 15) {
+        if (result.toString().length > 14) {
             formattedResult = result.toExponential(5);
         } else if (result % 1 === 0) {
             formattedResult = result.toString();
